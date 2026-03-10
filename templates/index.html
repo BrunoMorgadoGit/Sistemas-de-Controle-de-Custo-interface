@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Organizador de Custos - Gerencie seus gastos mensais de forma intuitiva">
+    <title>Organizador de Custos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css?v=2">
+</head>
+
+<body>
+
+    <!-- Auth Section -->
+    <section id="auth-section" class="auth-wrapper" style="display: none;">
+        <div class="glass-card auth-card">
+            <h2 class="section-title"><i class="fas fa-wallet"></i> Organizador de Custos</h2>
+
+            <div id="login-container">
+                <form id="form-login">
+                    <div class="form-group">
+                        <label for="login-user"><i class="fas fa-user"></i> Usuário</label>
+                        <input type="text" id="login-user" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-pass"><i class="fas fa-lock"></i> Senha</label>
+                        <input type="password" id="login-pass" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+                    <p class="auth-switch">Não tem conta? <a href="#" id="go-to-register">Cadastre-se</a></p>
+                </form>
+            </div>
+
+            <div id="register-container" style="display: none;">
+                <form id="form-register">
+                    <div class="form-group">
+                        <label for="reg-user"><i class="fas fa-user"></i> Novo Usuário</label>
+                        <input type="text" id="reg-user" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-pass"><i class="fas fa-lock"></i> Senha (min 6 chars)</label>
+                        <input type="password" id="reg-pass" minlength="6" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Criar Conta</button>
+                    <p class="auth-switch">Já tem conta? <a href="#" id="go-to-login">Fazer Login</a></p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Content Wrapper -->
+    <div id="app-content" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content"
+                style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                <div class="month-selector">
+                    <button id="btn-prev-month" class="btn-icon" title="Mês anterior">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span id="current-month-label" class="month-label"></span>
+                    <button id="btn-next-month" class="btn-icon" title="Próximo mês">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="user-info">
+                    <span id="user-greeting" style="color: #e8edf5; font-weight: 500; margin-right: 15px;"></span>
+                    <button id="btn-logout" class="btn btn-sm btn-danger"><i class="fas fa-sign-out-alt"></i>
+                        Sair</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Dashboard Cards -->
+            <section class="dashboard" id="dashboard">
+                <div class="card card-income">
+                    <div class="card-icon"><i class="fas fa-arrow-down"></i></div>
+                    <div class="card-info">
+                        <span class="card-label">Receitas do Mês</span>
+                        <span class="card-value" id="total-receitas">R$ 0,00</span>
+                    </div>
+                </div>
+                <div class="card card-total">
+                    <div class="card-icon"><i class="fas fa-arrow-up"></i></div>
+                    <div class="card-info">
+                        <span class="card-label">Gastos do Mês</span>
+                        <span class="card-value" id="total-mes">R$ 0,00</span>
+                    </div>
+                </div>
+                <div class="card card-balance">
+                    <div class="card-icon"><i class="fas fa-scale-balanced"></i></div>
+                    <div class="card-info">
+                        <span class="card-label">Saldo</span>
+                        <span class="card-value" id="saldo-mes">R$ 0,00</span>
+                    </div>
+                </div>
+                <div class="card card-invest">
+                    <div class="card-icon"><i class="fas fa-chart-area"></i></div>
+                    <div class="card-info">
+                        <span class="card-label">Investimentos</span>
+                        <span class="card-value" id="total-invest">R$ 0,00</span>
+                    </div>
+                </div>
+                <div class="card card-count">
+                    <div class="card-icon"><i class="fas fa-receipt"></i></div>
+                    <div class="card-info">
+                        <span class="card-label">Qtd. Gastos</span>
+                        <span class="card-value" id="qtd-gastos">0</span>
+                    </div>
+                </div>
+                <div class="card card-avg">
+                    <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="card-info">
+                        <span class="card-label">Média por Gasto</span>
+                        <span class="card-value" id="media-gasto">R$ 0,00</span>
+                    </div>
+                </div>
+                <div class="card card-caixa" id="card-caixa" title="Clique para editar o saldo inicial">
+                    <div class="card-icon"><i class="fas fa-vault"></i></div>
+                    <div class="card-info">
+                        <span class="card-label">Dinheiro em Caixa</span>
+                        <span class="card-value" id="caixa-valor">R$ 0,00</span>
+                    </div>
+                </div>
+                <div class="card card-disponivel">
+                    <div class="card-icon"><i class="fas fa-wallet"></i></div>
+                    <div class="card-info">
+                        <span class="card-label">Total Disponível</span>
+                        <span class="card-value" id="total-disponivel">R$ 0,00</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Caixa Config (inline) -->
+            <section class="caixa-config glass-card" id="caixa-config" style="display:none;">
+                <div class="caixa-config-inner">
+                    <div class="caixa-config-label">
+                        <i class="fas fa-vault"></i>
+                        <span>Saldo Inicial do Caixa</span>
+                    </div>
+                    <div class="caixa-config-form">
+                        <input type="number" id="caixa-saldo-inicial" step="0.01" min="0" placeholder="0,00">
+                        <button class="btn btn-primary btn-sm" id="btn-salvar-caixa">
+                            <i class="fas fa-check"></i> Salvar
+                        </button>
+                        <button class="btn btn-secondary btn-sm" id="btn-cancelar-caixa">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+
+                <!-- Left Column: Form + Converter -->
+                <div class="left-column">
+
+                    <!-- Add Expense Form -->
+                    <section class="section glass-card">
+                        <h2 class="section-title">
+                            <i class="fas fa-plus-circle"></i>
+                            <span id="form-title">Novo Gasto</span>
+                        </h2>
+                        <form id="form-gasto" class="form-gasto">
+                            <input type="hidden" id="gasto-id" value="">
+
+                            <div class="form-group">
+                                <label for="descricao"><i class="fas fa-tag"></i> Descrição</label>
+                                <input type="text" id="descricao" placeholder="Ex: Conta de luz" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="valor"><i class="fas fa-dollar-sign"></i> Valor (R$)</label>
+                                    <input type="number" id="valor" step="0.01" min="0" placeholder="0,00" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="data"><i class="fas fa-calendar"></i> Data</label>
+                                    <input type="date" id="data" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="categoria"><i class="fas fa-folder"></i> Categoria</label>
+                                <select id="categoria">
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="anotacao"><i class="fas fa-sticky-note"></i> Anotação</label>
+                                <textarea id="anotacao" rows="3"
+                                    placeholder="Observações sobre este gasto..."></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="btn-salvar">
+                                    <i class="fas fa-save"></i> Salvar
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="btn-cancelar" style="display:none;">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Add Income Form -->
+                    <section class="section glass-card">
+                        <h2 class="section-title">
+                            <i class="fas fa-hand-holding-dollar"></i>
+                            <span id="form-receita-title">Nova Receita</span>
+                        </h2>
+                        <form id="form-receita">
+                            <input type="hidden" id="receita-id" value="">
+
+                            <div class="form-group">
+                                <label for="receita-descricao"><i class="fas fa-tag"></i> Descrição</label>
+                                <input type="text" id="receita-descricao" placeholder="Ex: Salário, Freelance..."
+                                    required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="receita-valor"><i class="fas fa-dollar-sign"></i> Valor (R$)</label>
+                                    <input type="number" id="receita-valor" step="0.01" min="0" placeholder="0,00"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="receita-data"><i class="fas fa-calendar"></i> Data</label>
+                                    <input type="date" id="receita-data" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="receita-anotacao"><i class="fas fa-sticky-note"></i> Anotação</label>
+                                <textarea id="receita-anotacao" rows="2" placeholder="Observações..."></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="btn-salvar-receita">
+                                    <i class="fas fa-save"></i> Salvar Receita
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="btn-cancelar-receita"
+                                    style="display:none;">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Add Investment Form -->
+                    <section class="section glass-card">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-area"></i>
+                            <span id="form-invest-title">Novo Investimento</span>
+                        </h2>
+                        <form id="form-investimento">
+                            <input type="hidden" id="invest-id" value="">
+
+                            <div class="form-group">
+                                <label for="invest-descricao"><i class="fas fa-tag"></i> Descrição</label>
+                                <input type="text" id="invest-descricao" placeholder="Ex: Tesouro Selic 2029" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="invest-valor"><i class="fas fa-dollar-sign"></i> Valor (R$)</label>
+                                    <input type="number" id="invest-valor" step="0.01" min="0" placeholder="0,00"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="invest-data"><i class="fas fa-calendar"></i> Data</label>
+                                    <input type="date" id="invest-data" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="invest-tipo"><i class="fas fa-layer-group"></i> Tipo</label>
+                                <select id="invest-tipo">
+                                    <option value="Renda Fixa">Renda Fixa</option>
+                                    <option value="Ações">Ações</option>
+                                    <option value="Fundos Imobiliários">Fundos Imobiliários</option>
+                                    <option value="Criptomoedas">Criptomoedas</option>
+                                    <option value="Tesouro Direto">Tesouro Direto</option>
+                                    <option value="Poupança">Poupança</option>
+                                    <option value="CDB">CDB</option>
+                                    <option value="LCI/LCA">LCI/LCA</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="invest-anotacao"><i class="fas fa-sticky-note"></i> Anotação</label>
+                                <textarea id="invest-anotacao" rows="2" placeholder="Observações..."></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="btn-salvar-invest">
+                                    <i class="fas fa-save"></i> Salvar
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="btn-cancelar-invest"
+                                    style="display:none;">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Currency Converter -->
+                    <section class="section glass-card">
+                        <h2 class="section-title">
+                            <i class="fas fa-exchange-alt"></i>
+                            Conversor de Moedas
+                        </h2>
+                        <div class="converter">
+                            <div class="form-group">
+                                <label for="conv-valor"><i class="fas fa-money-bill"></i> Valor</label>
+                                <input type="number" id="conv-valor" step="0.01" min="0" placeholder="100.00">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="conv-de">De</label>
+                                    <select id="conv-de">
+                                        <option value="BRL" selected>🇧🇷 BRL</option>
+                                        <option value="USD">🇺🇸 USD</option>
+                                        <option value="EUR">🇪🇺 EUR</option>
+                                        <option value="GBP">🇬🇧 GBP</option>
+                                        <option value="JPY">🇯🇵 JPY</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="conv-para">Para</label>
+                                    <select id="conv-para">
+                                        <option value="BRL">🇧🇷 BRL</option>
+                                        <option value="USD" selected>🇺🇸 USD</option>
+                                        <option value="EUR">🇪🇺 EUR</option>
+                                        <option value="GBP">🇬🇧 GBP</option>
+                                        <option value="JPY">🇯🇵 JPY</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" id="btn-converter" style="width:100%;">
+                                <i class="fas fa-sync-alt"></i> Converter
+                            </button>
+                            <div id="resultado-conversao" class="conversion-result" style="display:none;"></div>
+                        </div>
+                    </section>
+
+                    <!-- Category Manager -->
+                    <section class="section glass-card">
+                        <h2 class="section-title">
+                            <i class="fas fa-palette"></i>
+                            Categorias
+                        </h2>
+                        <div class="category-form">
+                            <div class="form-row">
+                                <div class="form-group" style="flex:1;">
+                                    <input type="text" id="nova-categoria" placeholder="Nova categoria...">
+                                </div>
+                                <div class="form-group" style="flex:0; min-width: 50px;">
+                                    <input type="color" id="cor-categoria" value="#6c63ff" title="Cor da categoria">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" id="btn-add-cat" style="width:100%;">
+                                <i class="fas fa-plus"></i> Adicionar Categoria
+                            </button>
+                        </div>
+                        <ul id="lista-categorias" class="category-list"></ul>
+                    </section>
+
+                </div>
+
+                <!-- Right Column: Chart + Table -->
+                <div class="right-column">
+
+                    <!-- Chart -->
+                    <section class="section glass-card">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-pie"></i>
+                            Gastos por Categoria
+                        </h2>
+                        <div class="chart-container">
+                            <canvas id="grafico-categorias"></canvas>
+                            <p id="chart-empty" class="empty-msg" style="display:none;">
+                                <i class="fas fa-chart-pie"></i> Nenhum gasto registrado neste mês
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- Expenses Table -->
+                    <section class="section glass-card">
+                        <h2 class="section-title">
+                            <i class="fas fa-list-ul"></i>
+                            Lista de Gastos
+                        </h2>
+                        <div class="table-wrapper">
+                            <table class="expense-table" id="tabela-gastos">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Descrição</th>
+                                        <th>Categoria</th>
+                                        <th>Valor</th>
+                                        <th>Anotação</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-gastos">
+                                </tbody>
+                            </table>
+                            <p id="table-empty" class="empty-msg" style="display:none;">
+                                <i class="fas fa-inbox"></i> Nenhum gasto encontrado neste mês
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- Income Table -->
+                    <section class="section glass-card">
+                        <h2 class="section-title">
+                            <i class="fas fa-hand-holding-dollar"></i>
+                            Receitas do Mês
+                        </h2>
+                        <div class="table-wrapper">
+                            <table class="expense-table" id="tabela-receitas">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Descrição</th>
+                                        <th>Valor</th>
+                                        <th>Anotação</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-receitas">
+                                </tbody>
+                            </table>
+                            <p id="receitas-empty" class="empty-msg" style="display:none;">
+                                <i class="fas fa-piggy-bank"></i> Nenhuma receita neste mês
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- Investments Table -->
+                    <section class="section glass-card">
+                        <h2 class="section-title">
+                            <i class="fas fa-chart-area"></i>
+                            Investimentos do Mês
+                        </h2>
+                        <div class="table-wrapper">
+                            <table class="expense-table" id="tabela-investimentos">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Descrição</th>
+                                        <th>Tipo</th>
+                                        <th>Valor</th>
+                                        <th>Anotação</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-investimentos">
+                                </tbody>
+                            </table>
+                            <p id="investimentos-empty" class="empty-msg" style="display:none;">
+                                <i class="fas fa-chart-area"></i> Nenhum investimento neste mês
+                            </p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast"></div>
+
+    </div> <!-- End App Content -->
+
+    <script src="/static/app.js?v=2"></script>
+</body>
+
+</html>
