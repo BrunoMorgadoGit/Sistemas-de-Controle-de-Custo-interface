@@ -11,19 +11,6 @@ from app.config.database import init_db
 from app.routes import register_routes
 
 from flask_migrate import Migrate
-from sqlalchemy import event
-from sqlalchemy.engine import Engine
-import sqlite3
-
-
-# Habilita PRAGMA foreign_keys para conexões SQLite
-@event.listens_for(Engine, "connect")
-def _set_sqlite_pragma(dbapi_connection, connection_record):
-    # Somente para conexões sqlite3
-    if isinstance(dbapi_connection, sqlite3.Connection):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
 
 
 def create_app():

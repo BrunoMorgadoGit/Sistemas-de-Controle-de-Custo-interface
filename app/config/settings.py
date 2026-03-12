@@ -5,9 +5,10 @@ load_dotenv()
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-sqlite-test-key-change-in-prod")
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-DATABASE_FILE = os.environ.get("DATABASE_FILE", os.path.join(BASE_DIR, "banco.db"))
-SQLALCHEMY_DATABASE_URI = f"sqlite:///{DATABASE_FILE}"
+SQLALCHEMY_DATABASE_URI = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://usuario:senha@localhost:5432/gestao_financeira"
+)
 
 EXCHANGE_API_URL = "https://open.er-api.com/v6/latest"
 
