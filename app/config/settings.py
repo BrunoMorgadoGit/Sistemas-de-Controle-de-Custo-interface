@@ -6,9 +6,10 @@ load_dotenv()
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-sqlite-test-key-change-in-prod")
 
 SQLALCHEMY_DATABASE_URI = os.environ.get(
-    "DATABASE_URL",
-    "postgresql://usuario:senha@localhost:5432/gestao_financeira"
+    "DATABASE_URL"
 )
+if not SQLALCHEMY_DATABASE_URI:
+    raise RuntimeError("DATABASE_URL não configurada no .env. Configure o Supabase.")
 
 EXCHANGE_API_URL = "https://open.er-api.com/v6/latest"
 

@@ -5,9 +5,9 @@ Aplicação Flask com renderização server-side (Jinja2) para controle financei
 ## Visão geral
 
 - Backend: Flask + Jinja2 (server-side rendering)
-- Banco: SQLite local (arquivo padrão `banco.db` — configurável via `DATABASE_FILE`)
-- ORM: Flask‑SQLAlchemy; migrações com Flask‑Migrate/Alembic
-- Autenticação: sessões Flask (login / registro)
+- Banco: Supabase / PostgreSQL (configurado via `DATABASE_URL` no `.env`)
+- ORM: Flask-SQLAlchemy; migrações com Flask-Migrate/Alembic
+- Autenticação: sessões Flask (login por Email / registro)
 - Frontend: templates Jinja2 em `templates/`, assets em `static/` (JS modular e CSS responsivo)
 
 ## Requisitos

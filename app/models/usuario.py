@@ -6,8 +6,10 @@ class Usuario(db.Model):
     __tablename__ = 'usuarios'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String, nullable=False, unique=True)
+    email = db.Column(db.String, nullable=False, unique=True)
     password_hash = db.Column(db.String, nullable=False)
+    reset_token = db.Column(db.String, nullable=True)
+    reset_token_expires = db.Column(db.DateTime, nullable=True)
 
     # Relacionamentos
     categorias = db.relationship('Categoria', back_populates='usuario',
@@ -28,4 +30,4 @@ class Usuario(db.Model):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return f'<Usuario {self.username}>'
+        return f'<Usuario {self.email}>'

@@ -3,74 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizador de Custos — Login</title>
+    <title>Organizador de Custos — Acesso</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="/static/style.css?v=2">
+    <link rel="stylesheet" href="/static/style.css?v=10">
 </head>
 <body>
 
-<section class="auth-wrapper" style="display:flex;">
-    <div class="glass-card auth-card">
-        <h2 class="section-title"><i class="fas fa-wallet"></i> Organizador de Custos</h2>
+    <section id="auth-section" class="auth-wrapper">
+        <div class="auth-card glass-card">
+            <div class="auth-brand">
+                <div class="brand-icon"><i class="fas fa-wallet"></i></div>
+                <h2 class="brand-title">Organizador de Custos</h2>
+                <p class="brand-subtitle" id="auth-subtitle">
+                    {% if forgot_msg %}
+                        {{ forgot_msg }}
+                    {% elif success %}
+                        {{ success }}
+                    {% else %}
+                        Acesse seu painel financeiro
+                    {% endif %}
+                </p>
+            </div>
 
-        {% if success %}
-            <p class="auth-msg auth-msg-ok"><i class="fas fa-check-circle"></i> {{ success }}</p>
-        {% endif %}
-
-        <!-- Login -->
-        <div id="login-container" {% if show_register %}style="display:none;"{% endif %}>
-            {% if error %}
-                <p class="auth-msg auth-msg-err"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+            {% if error or reg_error %}
+                <p class="auth-msg auth-msg-err" style="margin-bottom: 1rem; color: #ef4444; font-size: 0.85rem; text-align: center;">
+                    <i class="fas fa-exclamation-circle"></i> {{ error or reg_error }}
+                </p>
             {% endif %}
-            <form method="POST" action="/login">
-                <div class="form-group">
-                    <label for="login-user"><i class="fas fa-user"></i> Usuário</label>
-                    <input type="text" id="login-user" name="username" required autocomplete="username">
-                </div>
-                <div class="form-group">
-                    <label for="login-pass"><i class="fas fa-lock"></i> Senha</label>
-                    <input type="password" id="login-pass" name="password" required autocomplete="current-password">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width:100%;">Entrar</button>
-                <p class="auth-switch">Não tem conta? <a href="#" id="go-to-register">Cadastre-se</a></p>
-            </form>
-        </div>
 
-        <!-- Cadastro -->
-        <div id="register-container" {% if not show_register %}style="display:none;"{% endif %}>
-            {% if reg_error %}
-                <p class="auth-msg auth-msg-err"><i class="fas fa-exclamation-circle"></i> {{ reg_error }}</p>
-            {% endif %}
-            <form method="POST" action="/register">
-                <div class="form-group">
-                    <label for="reg-user"><i class="fas fa-user"></i> Novo Usuário</label>
-                    <input type="text" id="reg-user" name="username" required autocomplete="username">
-                </div>
-                <div class="form-group">
-                    <label for="reg-pass"><i class="fas fa-lock"></i> Senha (mín. 6 caracteres)</label>
-                    <input type="password" id="reg-pass" name="password" minlength="6" required autocomplete="new-password">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width:100%;">Criar Conta</button>
-                <p class="auth-switch">Já tem conta? <a href="#" id="go-to-login">Fazer Login</a></p>
-            </form>
-        </div>
-    </div>
-</section>
+            <div id="login-container" {% if show_register or forgot_msg %}style="display: none;"{% endif %}>
+                <form action="/login" method="POST" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" placeholder="seu@email.com" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-pass">Senha</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="login-pass" name="password" placeholder="Sua senha..." required autocomplete="current-password">
+                            <button type="button" class="password-toggle" data-target="login-pass" title="Mostrar senha">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="width: 100%;">Acessar Painel</button>
+                    <p class="forgot-link" style="text-align: center; margin-top: 1rem; font-size: 0.85rem;">
+                        <a href="#" id="go-to-forgot" style="color: #a3a3a3; text-decoration: none;">Esqueceu a senha?</a>
+                    </p>
+                    <p class="auth-switch" style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #737373;">
+                        Novo por aqui? <a href="#" id="go-to-register" style="color: #ededed; font-weight: 600; text-decoration: none;">Criar conta</a>
+                    </p>
+                </form>
+            </div>
 
-<script>
-document.getElementById('go-to-register').addEventListener('click', e => {
-    e.preventDefault();
-    document.getElementById('login-container').style.display = 'none';
-    document.getElementById('register-container').style.display = 'block';
-});
-document.getElementById('go-to-login').addEventListener('click', e => {
-    e.preventDefault();
-    document.getElementById('register-container').style.display = 'none';
-    document.getElementById('login-container').style.display = 'block';
-});
-</script>
+            <div id="register-container" {% if not show_register %}style="display: none;"{% endif %}>
+                <form action="/register" method="POST" class="auth-form">
+                    <div class="form-group">
+                        <label for="reg-email">Email</label>
+                        <input type="email" id="reg-email" name="email" placeholder="seu@email.com" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-pass">Senha</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="reg-pass" name="password" minlength="6" placeholder="Mín. 6 caracteres" required autocomplete="new-password">
+                            <button type="button" class="password-toggle" data-target="reg-pass" title="Mostrar senha">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="width: 100%;">Cadastrar</button>
+                    <p class="auth-switch" style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #737373;">
+                        Já possui conta? <a href="#" id="go-to-login" style="color: #ededed; font-weight: 600; text-decoration: none;">Entrar</a>
+                    </p>
+                </form>
+            </div>
+
+            <div id="forgot-container" {% if not forgot_msg %}style="display: none;"{% endif %}>
+                <form action="/forgot-password" method="POST" class="auth-form">
+                    <div class="form-group">
+                        <label for="forgot-email">Informe seu email</label>
+                        <input type="email" id="forgot-email" name="email" placeholder="seu@email.com" required autocomplete="email">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" style="width: 100%;">Enviar link de recuperação</button>
+                    <p class="auth-switch" style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #737373;">
+                        <a href="#" id="forgot-back-to-login" style="color: #ededed; font-weight: 600; text-decoration: none;">Voltar ao login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Password visibility toggle
+        document.querySelectorAll('.password-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const input = document.getElementById(btn.dataset.target);
+                const icon = btn.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'fas fa-eye';
+                }
+            });
+        });
+
+        // Views Switching
+        const loginContainer = document.getElementById('login-container');
+        const registerContainer = document.getElementById('register-container');
+        const forgotContainer = document.getElementById('forgot-container');
+        const subtitle = document.getElementById('auth-subtitle');
+
+        document.getElementById('go-to-register').addEventListener('click', e => {
+            e.preventDefault();
+            loginContainer.style.display = 'none';
+            forgotContainer.style.display = 'none';
+            registerContainer.style.display = 'block';
+            subtitle.textContent = 'Crie sua conta financeira';
+        });
+
+        document.getElementById('go-to-login').addEventListener('click', e => {
+            e.preventDefault();
+            registerContainer.style.display = 'none';
+            forgotContainer.style.display = 'none';
+            loginContainer.style.display = 'block';
+            subtitle.textContent = 'Acesse seu painel financeiro';
+        });
+
+        document.getElementById('go-to-forgot').addEventListener('click', e => {
+            e.preventDefault();
+            loginContainer.style.display = 'none';
+            registerContainer.style.display = 'none';
+            forgotContainer.style.display = 'block';
+            subtitle.textContent = 'Recupere sua senha';
+        });
+
+        document.getElementById('forgot-back-to-login').addEventListener('click', e => {
+            e.preventDefault();
+            forgotContainer.style.display = 'none';
+            loginContainer.style.display = 'block';
+            subtitle.textContent = 'Acesse seu painel financeiro';
+        });
+    </script>
 </body>
 </html>

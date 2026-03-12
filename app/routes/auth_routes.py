@@ -11,9 +11,9 @@ def login_page():
         return redirect("/")
 
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip()
         password = request.form.get("password", "").strip()
-        ok, data = auth_controller.process_login(username, password)
+        ok, data = auth_controller.process_login(email, password)
         if ok:
             return redirect("/")
         return render_template("login.html", **data)
@@ -23,10 +23,31 @@ def login_page():
 
 @auth_bp.route("/register", methods=["POST"])
 def register_page():
-    username = request.form.get("username", "").strip()
+    email = request.form.get("email", "").strip()
     password = request.form.get("password", "").strip()
-    ok, data = auth_controller.process_register(username, password)
+    ok, data = auth_controller.process_register(email, password)
     return render_template("login.html", **data)
+
+
+@auth_bp.route("/forgot-password", methods=["POST"])
+def forgot_password():
+    email = request.form.get("email", "").strip()
+    ok, msg = auth_controller.process_forgot_password(email)
+    return render_template("login.html", forgot_msg=msg)
+
+
+@auth_bp.route("/reset-password", methods=["GET", "POST"])
+def reset_password():
+    token = request.args.get("token")
+    if request.method == "POST":
+        token = request.form.get("token")
+        password = request.form.get("password", "").strip()
+        ok, msg = auth_controller.process_reset_password(token, password)
+        if ok:
+            return render_template("login.html", success=msg)
+        return render_template("reset_password.html", token=token, error=msg)
+
+    return render_template("reset_password.html", token=token)
 
 
 @auth_bp.route("/logout")
