@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Investimentos - Organizador de Custos{% endblock %}
+
+{% block content %}
+
+<div class="page-grid">
+
+    <!-- Formulário Investimento -->
+    <section class="section glass-card" id="form-invest-section">
+        <h2 class="section-title">
+            <i class="fas fa-chart-area"></i>
+            <span>{{ 'Editar Investimento' if edit_invest else 'Novo Investimento' }}</span>
+        </h2>
+        <form method="POST" action="{{ '/investimentos/' ~ edit_invest.id if edit_invest else '/investimentos' }}">
+            <input type="hidden" name="mes" value="{{ mes }}">
+            <input type="hidden" name="ano" value="{{ ano }}">
+
+            <div class="form-group">
+                <label><i class="fas fa-tag"></i> Descrição</label>
+                <input type="text" name="descricao" placeholder="Ex: Tesouro Selic 2029"
+                    value="{{ edit_invest.descricao if edit_invest else '' }}" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-dollar-sign"></i> Valor (R$)</label>
+                    <input type="number" name="valor" step="0.01" min="0" placeholder="0,00"
+                        value="{{ edit_invest.valor if edit_invest else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Data</label>
+                    <input type="date" name="data"
+                        value="{{ edit_invest.data if edit_invest else (ano ~ '-' ~ mes ~ '-01') }}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-layer-group"></i> Tipo</label>
+                <select name="tipo">
+                    {% for t in tipos_investimento %}
+                    <option value="{{ t }}" {% if edit_invest and edit_invest.tipo==t %}selected{% endif %}>
+                        {{ t }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-sticky-note"></i> Anotação</label>
+                <textarea name="anotacao" rows="2"
+                    placeholder="Observações...">{{ edit_invest.anotacao if edit_invest else '' }}</textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-{{ 'check' if edit_invest else 'save' }}"></i>
+                    {{ 'Atualizar' if edit_invest else 'Salvar' }}
+                </button>
+                {% if edit_invest %}
+                <a href="/investimentos?mes={{ mes }}&ano={{ ano }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </section>
+
+    <!-- Tabela de Investimentos -->
+    <section class="section glass-card">
+        <h2 class="section-title">
+            <i class="fas fa-chart-area"></i> Investimentos do Mês
+        </h2>
+        <div class="table-wrapper">
+            <table class="expense-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Tipo</th>
+                        <th>Valor</th>
+                        <th>Anotação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in investimentos %}
+                    <tr>
+                        <td>{{ i.data | fmt_date }}</td>
+                        <td><strong>{{ i.descricao }}</strong></td>
+                        <td><span class="cat-badge invest-badge">{{ i.tipo }}</span></td>
+                        <td class="valor-col invest-valor">{{ i.valor | brl }}</td>
+                        <td class="anotacao-col" title="{{ i.anotacao or '' }}">
+                            {{ i.anotacao or '—' }}
+                        </td>
+                        <td>
+                            <div class="actions-col">
+                                <a href="/investimentos?edit_invest={{ i.id }}&mes={{ mes }}&ano={{ ano }}#form-invest-section"
+                                    class="btn btn-sm btn-secondary" title="Editar">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <form method="POST" action="/investimentos/{{ i.id }}/excluir" style="display:inline;"
+                                    onsubmit="return confirm('Excluir este investimento?')">
+                                    <input type="hidden" name="mes" value="{{ mes }}">
+                                    <input type="hidden" name="ano" value="{{ ano }}">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">
+                            <p class="empty-msg">
+                                <i class="fas fa-chart-area"></i> Nenhum investimento neste mês
+                            </p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

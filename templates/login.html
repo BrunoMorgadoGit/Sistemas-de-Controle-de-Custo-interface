@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador de Custos — Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css?v=2">
+</head>
+<body>
+
+<section class="auth-wrapper" style="display:flex;">
+    <div class="glass-card auth-card">
+        <h2 class="section-title"><i class="fas fa-wallet"></i> Organizador de Custos</h2>
+
+        {% if success %}
+            <p class="auth-msg auth-msg-ok"><i class="fas fa-check-circle"></i> {{ success }}</p>
+        {% endif %}
+
+        <!-- Login -->
+        <div id="login-container" {% if show_register %}style="display:none;"{% endif %}>
+            {% if error %}
+                <p class="auth-msg auth-msg-err"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+            {% endif %}
+            <form method="POST" action="/login">
+                <div class="form-group">
+                    <label for="login-user"><i class="fas fa-user"></i> Usuário</label>
+                    <input type="text" id="login-user" name="username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="login-pass"><i class="fas fa-lock"></i> Senha</label>
+                    <input type="password" id="login-pass" name="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Entrar</button>
+                <p class="auth-switch">Não tem conta? <a href="#" id="go-to-register">Cadastre-se</a></p>
+            </form>
+        </div>
+
+        <!-- Cadastro -->
+        <div id="register-container" {% if not show_register %}style="display:none;"{% endif %}>
+            {% if reg_error %}
+                <p class="auth-msg auth-msg-err"><i class="fas fa-exclamation-circle"></i> {{ reg_error }}</p>
+            {% endif %}
+            <form method="POST" action="/register">
+                <div class="form-group">
+                    <label for="reg-user"><i class="fas fa-user"></i> Novo Usuário</label>
+                    <input type="text" id="reg-user" name="username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="reg-pass"><i class="fas fa-lock"></i> Senha (mín. 6 caracteres)</label>
+                    <input type="password" id="reg-pass" name="password" minlength="6" required autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Criar Conta</button>
+                <p class="auth-switch">Já tem conta? <a href="#" id="go-to-login">Fazer Login</a></p>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+document.getElementById('go-to-register').addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('register-container').style.display = 'block';
+});
+document.getElementById('go-to-login').addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('register-container').style.display = 'none';
+    document.getElementById('login-container').style.display = 'block';
+});
+</script>
+</body>
+</html>

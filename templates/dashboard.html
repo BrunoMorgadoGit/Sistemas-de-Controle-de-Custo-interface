@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Organizador de Custos{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<!-- Dashboard Cards -->
+<section class="dashboard" id="dashboard">
+    <div class="card card-income">
+        <div class="card-icon"><i class="fas fa-arrow-down"></i></div>
+        <div class="card-info">
+            <span class="card-label">Receitas do Mês</span>
+            <span class="card-value">{{ total_receitas | brl }}</span>
+        </div>
+    </div>
+    <div class="card card-total">
+        <div class="card-icon"><i class="fas fa-arrow-up"></i></div>
+        <div class="card-info">
+            <span class="card-label">Gastos do Mês</span>
+            <span class="card-value">{{ total_gastos | brl }}</span>
+        </div>
+    </div>
+    <div class="card card-balance">
+        <div class="card-icon"><i class="fas fa-scale-balanced"></i></div>
+        <div class="card-info">
+            <span class="card-label">Saldo</span>
+            <span class="card-value {% if saldo >= 0 %}text-positive{% else %}text-negative{% endif %}">
+                {{ saldo | brl }}
+            </span>
+        </div>
+    </div>
+    <div class="card card-invest">
+        <div class="card-icon"><i class="fas fa-chart-area"></i></div>
+        <div class="card-info">
+            <span class="card-label">Investimentos</span>
+            <span class="card-value">{{ total_investimentos | brl }}</span>
+        </div>
+    </div>
+    <div class="card card-count">
+        <div class="card-icon"><i class="fas fa-receipt"></i></div>
+        <div class="card-info">
+            <span class="card-label">Qtd. Gastos</span>
+            <span class="card-value">{{ quantidade }}</span>
+        </div>
+    </div>
+    <div class="card card-avg">
+        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+        <div class="card-info">
+            <span class="card-label">Média por Gasto</span>
+            <span class="card-value">{{ media | brl }}</span>
+        </div>
+    </div>
+    <div class="card card-caixa" id="card-caixa" title="Clique para editar o saldo inicial" style="cursor:pointer;">
+        <div class="card-icon"><i class="fas fa-vault"></i></div>
+        <div class="card-info">
+            <span class="card-label">Dinheiro em Caixa</span>
+            <span class="card-value">{{ caixa | brl }}</span>
+        </div>
+    </div>
+    <div class="card card-disponivel">
+        <div class="card-icon"><i class="fas fa-wallet"></i></div>
+        <div class="card-info">
+            <span class="card-label">Total Disponível</span>
+            <span class="card-value {% if total_disponivel >= 0 %}text-positive{% else %}text-negative{% endif %}">
+                {{ total_disponivel | brl }}
+            </span>
+        </div>
+    </div>
+</section>
+
+<!-- Caixa Config (toggle via JS) -->
+<section class="caixa-config glass-card{% if not edit_caixa %} hidden{% endif %}" id="caixa-config">
+    <div class="caixa-config-inner">
+        <div class="caixa-config-label">
+            <i class="fas fa-vault"></i>
+            <span>Saldo Inicial do Caixa</span>
+        </div>
+        <form method="POST" action="/caixa" class="caixa-config-form">
+            <input type="hidden" name="mes" value="{{ mes }}">
+            <input type="hidden" name="ano" value="{{ ano }}">
+            <input type="number" id="caixa-saldo-inicial" name="saldo_inicial" step="0.01" min="0" placeholder="0,00"
+                value="{{ saldo_inicial }}">
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="fas fa-check"></i> Salvar
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-cancelar-caixa">
+                <i class="fas fa-times"></i>
+            </button>
+        </form>
+    </div>
+</section>
+
+<!-- Gráfico -->
+<section class="section glass-card">
+    <h2 class="section-title">
+        <i class="fas fa-chart-pie"></i> Gastos por Categoria
+    </h2>
+    <div class="chart-container">
+        <canvas id="grafico-categorias" {% if not por_categoria %}style="display:none;" {% endif %}></canvas>
+        <p id="chart-empty" class="empty-msg" {% if por_categoria %}style="display:none;" {% endif %}>
+            <i class="fas fa-chart-pie"></i> Nenhum gasto registrado neste mês
+        </p>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_data %}
+<script type="application/json" id="chart-data">{{ por_categoria | tojson }}</script>
+{% endblock %}

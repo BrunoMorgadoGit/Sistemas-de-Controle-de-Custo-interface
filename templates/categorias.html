@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Categorias - Organizador de Custos{% endblock %}
+
+{% block content %}
+
+<div class="page-single">
+
+    <!-- Gerenciar Categorias -->
+    <section class="section glass-card">
+        <h2 class="section-title">
+            <i class="fas fa-palette"></i> Categorias
+        </h2>
+        <div class="category-form">
+            <form method="POST" action="/categorias">
+                <input type="hidden" name="mes" value="{{ mes }}">
+                <input type="hidden" name="ano" value="{{ ano }}">
+                <div class="form-row">
+                    <div class="form-group" style="flex:1;">
+                        <input type="text" name="nome" placeholder="Nova categoria..." required>
+                    </div>
+                    <div class="form-group" style="flex:0; min-width:50px;">
+                        <input type="color" name="cor" value="#6c63ff" title="Cor da categoria">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                    <i class="fas fa-plus"></i> Adicionar Categoria
+                </button>
+            </form>
+        </div>
+        <ul class="category-list">
+            {% for c in categorias %}
+            <li>
+                <div class="cat-info">
+                    <span class="cat-dot" data-cor="{{ c.cor }}"></span>
+                    <span class="cat-name">{{ c.nome }}</span>
+                </div>
+                <form method="POST" action="/categorias/{{ c.id }}/excluir" style="display:inline;"
+                    onsubmit="return confirm('Remover a categoria {{ c.nome }}?')">
+                    <input type="hidden" name="mes" value="{{ mes }}">
+                    <input type="hidden" name="ano" value="{{ ano }}">
+                    <button type="submit" title="Remover">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </form>
+            </li>
+            {% else %}
+            <li style="color:#8899b8; text-align:center; padding:12px 0;">
+                Nenhuma categoria criada ainda.
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+</div>
+
+{% endblock %}

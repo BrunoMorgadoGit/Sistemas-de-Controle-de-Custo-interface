@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Receitas - Organizador de Custos{% endblock %}
+
+{% block content %}
+
+<div class="page-grid">
+
+    <!-- Formulário Receita -->
+    <section class="section glass-card" id="form-receita-section">
+        <h2 class="section-title">
+            <i class="fas fa-hand-holding-dollar"></i>
+            <span>{{ 'Editar Receita' if edit_receita else 'Nova Receita' }}</span>
+        </h2>
+        <form method="POST" action="{{ '/receitas/' ~ edit_receita.id if edit_receita else '/receitas' }}">
+            <input type="hidden" name="mes" value="{{ mes }}">
+            <input type="hidden" name="ano" value="{{ ano }}">
+
+            <div class="form-group">
+                <label><i class="fas fa-tag"></i> Descrição</label>
+                <input type="text" name="descricao" placeholder="Ex: Salário, Freelance..."
+                    value="{{ edit_receita.descricao if edit_receita else '' }}" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-dollar-sign"></i> Valor (R$)</label>
+                    <input type="number" name="valor" step="0.01" min="0" placeholder="0,00"
+                        value="{{ edit_receita.valor if edit_receita else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Data</label>
+                    <input type="date" name="data"
+                        value="{{ edit_receita.data if edit_receita else (ano ~ '-' ~ mes ~ '-01') }}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-sticky-note"></i> Anotação</label>
+                <textarea name="anotacao" rows="2"
+                    placeholder="Observações...">{{ edit_receita.anotacao if edit_receita else '' }}</textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-{{ 'check' if edit_receita else 'save' }}"></i>
+                    {{ 'Atualizar' if edit_receita else 'Salvar Receita' }}
+                </button>
+                {% if edit_receita %}
+                <a href="/receitas?mes={{ mes }}&ano={{ ano }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </section>
+
+    <!-- Tabela de Receitas -->
+    <section class="section glass-card">
+        <h2 class="section-title">
+            <i class="fas fa-hand-holding-dollar"></i> Receitas do Mês
+        </h2>
+        <div class="table-wrapper">
+            <table class="expense-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                        <th>Anotação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in receitas %}
+                    <tr>
+                        <td>{{ r.data | fmt_date }}</td>
+                        <td><strong>{{ r.descricao }}</strong></td>
+                        <td class="valor-col receita-valor">{{ r.valor | brl }}</td>
+                        <td class="anotacao-col" title="{{ r.anotacao or '' }}">
+                            {{ r.anotacao or '—' }}
+                        </td>
+                        <td>
+                            <div class="actions-col">
+                                <a href="/receitas?edit_receita={{ r.id }}&mes={{ mes }}&ano={{ ano }}#form-receita-section"
+                                    class="btn btn-sm btn-secondary" title="Editar">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <form method="POST" action="/receitas/{{ r.id }}/excluir" style="display:inline;"
+                                    onsubmit="return confirm('Excluir esta receita?')">
+                                    <input type="hidden" name="mes" value="{{ mes }}">
+                                    <input type="hidden" name="ano" value="{{ ano }}">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5">
+                            <p class="empty-msg">
+                                <i class="fas fa-piggy-bank"></i> Nenhuma receita neste mês
+                            </p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}
