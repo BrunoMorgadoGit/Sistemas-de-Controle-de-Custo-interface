@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Gastos - Organizador de Custos{% endblock %}
+
+{% block content %}
+
+<div class="page-grid">
+
+    <!-- Formulário Gasto -->
+    <section class="section glass-card" id="form-gasto-section">
+        <h2 class="section-title">
+            <i class="fas fa-plus-circle"></i>
+            <span>{{ 'Editar Gasto' if edit_gasto else 'Novo Gasto' }}</span>
+        </h2>
+        <form method="POST" action="{{ '/gastos/' ~ edit_gasto.id if edit_gasto else '/gastos' }}" class="form-gasto">
+            <input type="hidden" name="mes" value="{{ mes }}">
+            <input type="hidden" name="ano" value="{{ ano }}">
+
+            <div class="form-group">
+                <label><i class="fas fa-tag"></i> Descrição</label>
+                <input type="text" name="descricao" placeholder="Ex: Conta de luz"
+                    value="{{ edit_gasto.descricao if edit_gasto else '' }}" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-dollar-sign"></i> Valor (R$)</label>
+                    <input type="number" name="valor" step="0.01" min="0" placeholder="0,00"
+                        value="{{ edit_gasto.valor if edit_gasto else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Data</label>
+                    <input type="date" name="data"
+                        value="{{ edit_gasto.data if edit_gasto else (ano ~ '-' ~ mes ~ '-01') }}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-folder"></i> Categoria</label>
+                <select name="categoria_id">
+                    <option value="">Selecione...</option>
+                    {% for c in categorias %}
+                    <option value="{{ c.id }}" {% if edit_gasto and edit_gasto.categoria_id==c.id %}selected{% endif %}>
+                        {{ c.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-sticky-note"></i> Anotação</label>
+                <textarea name="anotacao" rows="3"
+                    placeholder="Observações sobre este gasto...">{{ edit_gasto.anotacao if edit_gasto else '' }}</textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-{{ 'check' if edit_gasto else 'save' }}"></i>
+                    {{ 'Atualizar' if edit_gasto else 'Salvar' }}
+                </button>
+                {% if edit_gasto %}
+                <a href="/gastos?mes={{ mes }}&ano={{ ano }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </section>
+
+    <!-- Tabela de Gastos -->
+    <section class="section glass-card">
+        <h2 class="section-title">
+            <i class="fas fa-list-ul"></i> Lista de Gastos
+        </h2>
+        <div class="table-wrapper">
+            <table class="expense-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Categoria</th>
+                        <th>Valor</th>
+                        <th>Anotação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for g in gastos %}
+                    <tr>
+                        <td>{{ g.data | fmt_date }}</td>
+                        <td><strong>{{ g.descricao }}</strong></td>
+                        <td>
+                            <span class="cat-badge">
+                                <span class="cat-dot" data-cor="{{ g.categoria_cor or '#94a3b8' }}"></span>
+                                {{ g.categoria_nome or 'Sem categoria' }}
+                            </span>
+                        </td>
+                        <td class="valor-col">{{ g.valor | brl }}</td>
+                        <td class="anotacao-col" title="{{ g.anotacao or '' }}">
+                            {{ g.anotacao or '—' }}
+                        </td>
+                        <td>
+                            <div class="actions-col">
+                                <a href="/gastos?edit_gasto={{ g.id }}&mes={{ mes }}&ano={{ ano }}#form-gasto-section"
+                                    class="btn btn-sm btn-secondary" title="Editar">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <form method="POST" action="/gastos/{{ g.id }}/excluir" style="display:inline;"
+                                    onsubmit="return confirm('Excluir este gasto?')">
+                                    <input type="hidden" name="mes" value="{{ mes }}">
+                                    <input type="hidden" name="ano" value="{{ ano }}">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">
+                            <p class="empty-msg">
+                                <i class="fas fa-inbox"></i> Nenhum gasto encontrado neste mês
+                            </p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

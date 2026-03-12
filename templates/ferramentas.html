@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Ferramentas - Organizador de Custos{% endblock %}
+
+{% block content %}
+
+<div class="page-single">
+
+    <!-- Conversor de Moedas -->
+    <section class="section glass-card">
+        <h2 class="section-title">
+            <i class="fas fa-exchange-alt"></i> Conversor de Moedas
+        </h2>
+        <div class="converter">
+            <div class="form-group">
+                <label for="conv-valor"><i class="fas fa-money-bill"></i> Valor</label>
+                <input type="number" id="conv-valor" step="0.01" min="0" placeholder="100.00">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="conv-de">De</label>
+                    <select id="conv-de">
+                        <option value="BRL" selected>BRL</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                        <option value="JPY">JPY</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="conv-para">Para</label>
+                    <select id="conv-para">
+                        <option value="BRL">BRL</option>
+                        <option value="USD" selected>USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                        <option value="JPY">JPY</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary" id="btn-converter" style="width:100%;">
+                <i class="fas fa-sync-alt"></i> Converter
+            </button>
+            <div id="resultado-conversao" class="conversion-result" style="display:none;"></div>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}
