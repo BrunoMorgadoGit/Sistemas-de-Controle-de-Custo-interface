@@ -13,6 +13,7 @@
             <span>{{ 'Editar Gasto' if edit_gasto else 'Novo Gasto' }}</span>
         </h2>
         <form method="POST" action="{{ '/gastos/' ~ edit_gasto.id if edit_gasto else '/gastos' }}" class="form-gasto">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="mes" value="{{ mes }}">
             <input type="hidden" name="ano" value="{{ ano }}">
 
@@ -103,6 +104,7 @@
                                 </a>
                                 <form method="POST" action="/gastos/{{ g.id }}/excluir" style="display:inline;"
                                     onsubmit="return confirm('Excluir este gasto?')">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="mes" value="{{ mes }}">
                                     <input type="hidden" name="ano" value="{{ ano }}">
                                     <button type="submit" class="btn btn-sm btn-danger" title="Excluir">

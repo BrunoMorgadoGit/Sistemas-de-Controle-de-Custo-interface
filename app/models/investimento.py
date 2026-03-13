@@ -2,6 +2,8 @@ from app.models import db
 
 
 class Investimento(db.Model):
+    """Entidade de alocação financeira do usuário por tipo de investimento."""
+
     __tablename__ = "investimentos"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -13,10 +15,11 @@ class Investimento(db.Model):
     criado_em = db.Column(db.String, server_default=db.func.current_timestamp())
     usuario_id = db.Column(db.Integer, db.ForeignKey("usuarios.id", ondelete="CASCADE"))
 
-    # Relacionamentos
     usuario = db.relationship("Usuario", back_populates="investimentos")
 
     def to_dict(self):
+        """Serializa o investimento para consumo em templates e formulários."""
+
         return {
             "id": self.id,
             "descricao": self.descricao,
@@ -25,7 +28,6 @@ class Investimento(db.Model):
             "data": self.data,
             "anotacao": self.anotacao,
             "criado_em": self.criado_em,
-            "usuario_id": self.usuario_id,
         }
 
     def __repr__(self):

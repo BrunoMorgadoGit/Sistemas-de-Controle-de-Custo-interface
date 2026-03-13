@@ -12,6 +12,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/static/style.css?v=3">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     {% block extra_head %}{% endblock %}
 </head>
 
@@ -55,10 +56,14 @@
             </a>
         </nav>
         <div class="sidebar-footer">
-            <a href="/logout" class="sidebar-link sidebar-logout">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Sair</span>
-            </a>
+            <form method="POST" action="/logout" style="margin:0;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="sidebar-link sidebar-logout"
+                    style="background:none;border:none;width:100%;cursor:pointer;text-align:left;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sair</span>
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -101,6 +106,18 @@
     <script type="application/json" id="server-toast">{{ toast | tojson }}</script>
     {% block extra_data %}{% endblock %}
     <script src="/static/app.js?v=4"></script>
+    <script>
+        // Auto-injeta CSRF token em todos os forms que ainda não possuem
+        document.querySelectorAll('form[method="POST"], form[method="post"]').forEach(function (form) {
+            if (!form.querySelector('input[name="csrf_token"]')) {
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'csrf_token';
+                input.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                form.appendChild(input);
+            }
+        });
+    </script>
     {% block extra_scripts %}{% endblock %}
 </body>
 

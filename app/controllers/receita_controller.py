@@ -2,10 +2,16 @@ from flask import session
 from app.models import db
 from app.models.receita import Receita
 
-# Função para criar uma nova receita
+MAX_LEN = 255
+
+
 def create(uid, descricao, valor, data, anotacao):
+    """Cria receita do usuário com limite de tamanho em campos livres."""
+
     if not descricao or valor is None:
         return
+    descricao = descricao[:MAX_LEN]
+    anotacao = (anotacao or "")[:MAX_LEN]
 
     receita = Receita(
         descricao=descricao,
@@ -18,10 +24,14 @@ def create(uid, descricao, valor, data, anotacao):
     db.session.commit()
     session["toast"] = "Receita adicionada!"
 
-# Função para atualizar uma receita existente
+
 def update(uid, receita_id, descricao, valor, data, anotacao):
+    """Atualiza receita existente somente quando pertencer ao usuário."""
+
     if not descricao or valor is None:
         return
+    descricao = descricao[:MAX_LEN]
+    anotacao = (anotacao or "")[:MAX_LEN]
 
     receita = Receita.query.filter_by(id=receita_id, usuario_id=uid).first()
     if not receita:
@@ -34,8 +44,10 @@ def update(uid, receita_id, descricao, valor, data, anotacao):
     db.session.commit()
     session["toast"] = "Receita atualizada!"
 
-# Função para deletar uma receita existente
+
 def delete(uid, receita_id):
+    """Exclui receita do usuário e define mensagem de retorno para a UI."""
+
     receita = Receita.query.filter_by(id=receita_id, usuario_id=uid).first()
     if receita:
         db.session.delete(receita)

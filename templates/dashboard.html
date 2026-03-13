@@ -80,6 +80,7 @@
             <span>Saldo Inicial do Caixa</span>
         </div>
         <form method="POST" action="/caixa" class="caixa-config-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="mes" value="{{ mes }}">
             <input type="hidden" name="ano" value="{{ ano }}">
             <input type="number" id="caixa-saldo-inicial" name="saldo_inicial" step="0.01" min="0" placeholder="0,00"
