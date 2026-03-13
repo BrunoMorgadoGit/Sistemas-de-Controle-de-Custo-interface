@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.db
+.sqlite
+migrations/
+README.md
+Docker-related-files-except-this-one
+Dockerfile
