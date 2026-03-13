@@ -26,5 +26,5 @@ SQLAlchemy==2.0.48
 typing_extensions==4.15.0
 urllib3==2.6.3
 Werkzeug==3.0.3
-argon2-cffi==23.1.0
-argon2-cffi-bindings==23.1.0
+argon2-cffi==25.1.0
+argon2-cffi-bindings==25.1.0
