@@ -13,6 +13,7 @@
         </h2>
         <div class="category-form">
             <form method="POST" action="/categorias">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="mes" value="{{ mes }}">
                 <input type="hidden" name="ano" value="{{ ano }}">
                 <div class="form-row">
@@ -37,6 +38,7 @@
                 </div>
                 <form method="POST" action="/categorias/{{ c.id }}/excluir" style="display:inline;"
                     onsubmit="return confirm('Remover a categoria {{ c.nome }}?')">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="mes" value="{{ mes }}">
                     <input type="hidden" name="ano" value="{{ ano }}">
                     <button type="submit" title="Remover">

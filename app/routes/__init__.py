@@ -9,6 +9,8 @@ from app.routes.api_routes import api_bp
 
 
 def register_routes(app):
+    """Registra todos os blueprints HTTP da aplicação."""
+
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(gasto_bp)

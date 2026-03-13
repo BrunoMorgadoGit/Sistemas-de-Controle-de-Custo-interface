@@ -1,11 +1,14 @@
 from flask import Blueprint, request, render_template, redirect, session
 
+from app.extensions import limiter
+from app.middlewares.auth_middleware import require_session
 from app.controllers import auth_controller
 
 auth_bp = Blueprint("auth", __name__)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@limiter.limit("10 per minute", methods=["POST"])
 def login_page():
     if "user_id" in session:
         return redirect("/")
@@ -15,6 +18,7 @@ def login_page():
         password = request.form.get("password", "").strip()
         ok, data = auth_controller.process_login(email, password)
         if ok:
+            session.permanent = True
             return redirect("/")
         return render_template("login.html", **data)
 
@@ -22,6 +26,7 @@ def login_page():
 
 
 @auth_bp.route("/register", methods=["POST"])
+@limiter.limit("5 per minute")
 def register_page():
     email = request.form.get("email", "").strip()
     password = request.form.get("password", "").strip()
@@ -29,28 +34,8 @@ def register_page():
     return render_template("login.html", **data)
 
 
-@auth_bp.route("/forgot-password", methods=["POST"])
-def forgot_password():
-    email = request.form.get("email", "").strip()
-    ok, msg = auth_controller.process_forgot_password(email)
-    return render_template("login.html", forgot_msg=msg)
-
-
-@auth_bp.route("/reset-password", methods=["GET", "POST"])
-def reset_password():
-    token = request.args.get("token")
-    if request.method == "POST":
-        token = request.form.get("token")
-        password = request.form.get("password", "").strip()
-        ok, msg = auth_controller.process_reset_password(token, password)
-        if ok:
-            return render_template("login.html", success=msg)
-        return render_template("reset_password.html", token=token, error=msg)
-
-    return render_template("reset_password.html", token=token)
-
-
-@auth_bp.route("/logout")
+@auth_bp.route("/logout", methods=["POST"])
+@require_session
 def logout_page():
     session.clear()
     return redirect("/login")

@@ -4,6 +4,8 @@ from app.models.caixa_config import CaixaConfig
 
 
 def update_saldo(uid, saldo_inicial):
+    """Atualiza saldo inicial do caixa, criando configuração quando ausente."""
+
     config = CaixaConfig.query.filter_by(usuario_id=uid).first()
     if config:
         config.saldo_inicial = saldo_inicial

@@ -13,6 +13,7 @@
             <span>{{ 'Editar Investimento' if edit_invest else 'Novo Investimento' }}</span>
         </h2>
         <form method="POST" action="{{ '/investimentos/' ~ edit_invest.id if edit_invest else '/investimentos' }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="mes" value="{{ mes }}">
             <input type="hidden" name="ano" value="{{ ano }}">
 
@@ -97,6 +98,7 @@
                                 </a>
                                 <form method="POST" action="/investimentos/{{ i.id }}/excluir" style="display:inline;"
                                     onsubmit="return confirm('Excluir este investimento?')">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="mes" value="{{ mes }}">
                                     <input type="hidden" name="ano" value="{{ ano }}">
                                     <button type="submit" class="btn btn-sm btn-danger" title="Excluir">

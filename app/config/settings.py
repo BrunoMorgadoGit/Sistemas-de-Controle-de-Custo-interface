@@ -1,15 +1,25 @@
 import os
+import secrets
 from dotenv import load_dotenv
 
 load_dotenv()
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "dev-sqlite-test-key-change-in-prod")
+_secret = os.environ.get("SECRET_KEY")
+if not _secret:
+    import warnings
+
+    warnings.warn(
+        "SECRET_KEY não definida! Usando chave aleatória (sessões serão "
+        "invalidadas a cada restart). Defina SECRET_KEY no .env em produção.",
+        stacklevel=1,
+    )
+    _secret = secrets.token_hex(32)
+
+SECRET_KEY = _secret
 
 SQLALCHEMY_DATABASE_URI = os.environ.get(
-    "DATABASE_URL"
+    "DATABASE_URL",
 )
-if not SQLALCHEMY_DATABASE_URI:
-    raise RuntimeError("DATABASE_URL não configurada no .env. Configure o Supabase.")
 
 EXCHANGE_API_URL = "https://open.er-api.com/v6/latest"
 

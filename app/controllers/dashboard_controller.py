@@ -11,7 +11,7 @@ from app.config.settings import MESES, TIPOS_INVESTIMENTO
 
 
 def _nav_data(mes, ano):
-    """Dados comuns de navegação para todas as páginas."""
+    """Monta estado de navegação mensal compartilhado entre as telas."""
     mes_int = int(mes)
     ano_int = int(ano)
     prev_m = 12 if mes_int == 1 else mes_int - 1
@@ -34,6 +34,8 @@ def _nav_data(mes, ano):
 
 
 def get_dashboard_data(usuario_id, mes, ano, edit_caixa):
+    """Consolida visão mensal do dashboard com caixa, saldo e distribuição por categoria."""
+
     padr = f"{ano}-{mes.zfill(2)}-%"
 
     gastos = Gasto.query.filter(
@@ -79,6 +81,7 @@ def get_dashboard_data(usuario_id, mes, ano, edit_caixa):
     ano_int = int(ano)
     prev_mes = 12 if mes_int == 1 else mes_int - 1
     prev_ano = ano_int - 1 if mes_int == 1 else ano_int
+    # Usa dia 31 como limite textual para incluir todo o mês anterior em comparação por string.
     limite_anterior = f"{prev_ano}-{str(prev_mes).zfill(2)}-31"
 
     prev_receitas_val = (
@@ -118,6 +121,8 @@ def get_dashboard_data(usuario_id, mes, ano, edit_caixa):
 
 
 def get_gastos_data(usuario_id, mes, ano, edit_gasto_id):
+    """Carrega gastos do mês e dados de apoio para edição no formulário."""
+
     padr = f"{ano}-{mes.zfill(2)}-%"
 
     gastos = (
@@ -144,6 +149,8 @@ def get_gastos_data(usuario_id, mes, ano, edit_gasto_id):
 
 
 def get_receitas_data(usuario_id, mes, ano, edit_receita_id):
+    """Carrega receitas do mês e item selecionado para edição, quando houver."""
+
     padr = f"{ano}-{mes.zfill(2)}-%"
 
     receitas = (
@@ -166,6 +173,8 @@ def get_receitas_data(usuario_id, mes, ano, edit_receita_id):
 
 
 def get_investimentos_data(usuario_id, mes, ano, edit_invest_id):
+    """Carrega investimentos mensais e catálogo de tipos suportados pela UI."""
+
     padr = f"{ano}-{mes.zfill(2)}-%"
 
     investimentos = (
@@ -193,6 +202,8 @@ def get_investimentos_data(usuario_id, mes, ano, edit_invest_id):
 
 
 def get_categorias_data(usuario_id, mes, ano):
+    """Retorna categorias do usuário para manutenção na tela de categorias."""
+
     categorias = (
         Categoria.query.filter_by(usuario_id=usuario_id).order_by(Categoria.nome).all()
     )
@@ -205,4 +216,6 @@ def get_categorias_data(usuario_id, mes, ano):
 
 
 def get_ferramentas_data(mes, ano):
+    """Entrega contexto de navegação para a página de ferramentas."""
+
     return _nav_data(mes, ano)

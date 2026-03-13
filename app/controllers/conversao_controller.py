@@ -3,8 +3,13 @@ from app.config.settings import EXCHANGE_API_URL
 
 
 def convert(valor, de, para):
-    """Retorna (sucesso: bool, dados: dict, status_code: int)."""
+    """Converte valor entre moedas usando API externa de câmbio.
+
+    Retorna tupla `(sucesso, payload, status_http)` para uso direto na camada de rota.
+    """
+
     try:
+        # Timeout curto evita bloquear a aplicação quando o provedor externo degrada.
         resp = http_requests.get(f"{EXCHANGE_API_URL}/{de}", timeout=5)
         dados = resp.json()
 

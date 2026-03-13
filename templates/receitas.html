@@ -13,6 +13,7 @@
             <span>{{ 'Editar Receita' if edit_receita else 'Nova Receita' }}</span>
         </h2>
         <form method="POST" action="{{ '/receitas/' ~ edit_receita.id if edit_receita else '/receitas' }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="mes" value="{{ mes }}">
             <input type="hidden" name="ano" value="{{ ano }}">
 
@@ -85,6 +86,7 @@
                                 </a>
                                 <form method="POST" action="/receitas/{{ r.id }}/excluir" style="display:inline;"
                                     onsubmit="return confirm('Excluir esta receita?')">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="mes" value="{{ mes }}">
                                     <input type="hidden" name="ano" value="{{ ano }}">
                                     <button type="submit" class="btn btn-sm btn-danger" title="Excluir">
